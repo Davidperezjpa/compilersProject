@@ -24,19 +24,25 @@ import ply.lex as lex
 
 
 
-literals = ['=', '+', '-', '*', '/', '^', '(', ')']
+literals = ['=', '+', '-', '*', '/', '^', '(', ')', ';']
 reserved = { 
     'int' : 'INTDEC',
     'float' : 'FLOATDEC',
     'string' : 'STRINGDEC',
+    'boolean' : 'BOOLEANDEC',
     'print' : 'PRINT'
  }
 
 tokens = [
-    'INUMBER', 'FNUMBER', 'STRING', 'NAME'
+    'INUMBER', 'FNUMBER', 'STRING', 'BOOLEAN', 'NAME'
 ] + list(reserved.values())
 
 # Tokens
+
+def t_BOOLEAN(t):
+    r'true|false'
+    return t
+
 def t_NAME(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     t.type = reserved.get(t.value,'NAME')    # Check for reserved words
@@ -55,6 +61,8 @@ def t_INUMBER(t):
 def t_STRING(t):
     r'".*"'
     return t
+
+
 
 t_ignore = " \t"
 
@@ -98,6 +106,10 @@ def p_is_assing(p):
 def p_statement_declare_float(p):
     'statement : FLOATDEC NAME is_assing'
     names[p[2]] = { "type": "FLOAT", "value":p[3]}
+
+def p_statement_declare_boolean(p):
+    'statement : BOOLEANDEC NAME is_assing'
+    names[p[2]] = { "type": "BOOLEAN", "value":p[3]}
 
 def p_statement_declare_string(p):
     'statement : STRINGDEC NAME is_assing'
@@ -150,12 +162,19 @@ def p_expression_fnumber(p):
     "expression : FNUMBER"
     p[0] = p[1]
 
+def p_expression_boolean(p):
+    "expression :  BOOLEAN"
+    p[0] = p[1]
+
 def p_expression_string(p):
     "expression :  STRING"
     p[0] = p[1][1:len(p[1]) - 1]
 
-def p_expression_name(p):
+
+
+def p_expression_name(p):       # obtiene el valor de una variable previamente guardada
     "expression : NAME"
+    # print(p[1])
     try:
         p[0] = names[p[1]]["value"]
     except LookupError:
