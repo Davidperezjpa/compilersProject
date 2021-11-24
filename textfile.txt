@@ -1,2 +1,2 @@
-string flt = "asdfasdf"
+boolean flt = true
 print(flt)
