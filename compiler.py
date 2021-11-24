@@ -1,15 +1,39 @@
 import ply.yacc as yacc
 import ply.lex as lex
 
-literals = ['=', '+', '-', '*', '/', '(', ')']
+#TODO Operaciones
+# Aritméticas
+# Comparación
+# Booleanas
+# Operaciones de bloques
+
+#TODO Tipos de datos
+# Int
+# Float
+# String
+# Bolean
+
+#TODO Operaciones permitidas
+#TODO Flujo de control
+# If/Else/Elif
+# While
+# For
+#TODO terminacion de ;
+#TODO Arbol sintáctico
+#TODO salida de codigo de 3 direcciones
+
+
+
+literals = ['=', '+', '-', '*', '/', '^', '(', ')']
 reserved = { 
     'int' : 'INTDEC',
     'float' : 'FLOATDEC',
+    'string' : 'STRINGDEC',
     'print' : 'PRINT'
  }
 
 tokens = [
-    'INUMBER', 'FNUMBER', 'NAME'
+    'INUMBER', 'FNUMBER', 'STRING', 'NAME'
 ] + list(reserved.values())
 
 # Tokens
@@ -26,6 +50,10 @@ def t_FNUMBER(t):
 def t_INUMBER(t):
     r'\d+'
     t.value = int(t.value)
+    return t
+
+def t_STRING(t):
+    r'".*"'
     return t
 
 t_ignore = " \t"
@@ -71,6 +99,10 @@ def p_statement_declare_float(p):
     'statement : FLOATDEC NAME is_assing'
     names[p[2]] = { "type": "FLOAT", "value":p[3]}
 
+def p_statement_declare_string(p):
+    'statement : STRINGDEC NAME is_assing'
+    names[p[2]] = { "type": "STRING", "value":p[3]}
+
 def p_statement_print(p):
     '''statement : PRINT '(' expression ')' '''
     print(p[3])
@@ -89,11 +121,18 @@ def p_expression_binop(p):
     '''expression : expression '+' expression
                   | expression '-' expression
                   | expression '*' expression
-                  | expression '/' expression'''
+                  | expression '/' expression
+                  | expression '^' expression'''
     if p[2] == '+':
         p[0] = p[1] + p[3]
     elif p[2] == '-':
         p[0] = p[1] - p[3]
+    elif p[2] == '*':
+        p[0] = p[1] * p[3]
+    elif p[2] == '/':
+        p[0] = p[1] / p[3]
+    elif p[2] == '^':
+        p[0] = p[1] ** p[3]
 
 def p_expression_uminus(p):
     "expression : '-' expression %prec UMINUS"
@@ -110,6 +149,10 @@ def p_expression_inumber(p):
 def p_expression_fnumber(p):
     "expression : FNUMBER"
     p[0] = p[1]
+
+def p_expression_string(p):
+    "expression :  STRING"
+    p[0] = p[1][1:len(p[1]) - 1]
 
 def p_expression_name(p):
     "expression : NAME"

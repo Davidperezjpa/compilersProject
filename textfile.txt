@@ -1,4 +1,2 @@
-float b
-int a
-a = 5
-b = a + 3.2
+string flt = "asdfasdf"
+print(flt)
