@@ -24,7 +24,7 @@ import ply.lex as lex
 
 
 
-literals = ['=', '+', '-', '*', '/', '^', '(', ')', ';']
+literals = ['=', '+', '-', '*', '/', '^', '(', ')']
 reserved = { 
     'int' : 'INTDEC',
     'float' : 'FLOATDEC',
@@ -34,8 +34,19 @@ reserved = {
  }
 
 tokens = [
-    'INUMBER', 'FNUMBER', 'STRING', 'BOOLEAN', 'NAME'
+    'INUMBER', 'FNUMBER', 'STRING', 'BOOLEAN', 'NAME', 'SEMICOLON'
 ] + list(reserved.values())
+
+# t_EQUAL            = r'=='
+# t_DIFFERENT        = r'!='
+# t_GREATER          = r'>'
+# t_LESSTHAN         = r'<'
+# t_GREATEREQUAL     = r'>='
+# t_LESSEQUAL        = r'<='
+
+
+
+
 
 # Tokens
 
@@ -63,6 +74,7 @@ def t_STRING(t):
     return t
 
 
+t_SEMICOLON = r';'
 
 t_ignore = " \t"
 
@@ -87,6 +99,9 @@ precedence = (
 # dictionary of names
 names = {}
 abstractTree = []
+
+def p_code(p):
+    'code : statement SEMICOLON'
 
 def p_statement_declare_int(p):
     '''statement : INTDEC NAME is_assing
@@ -188,7 +203,8 @@ def p_error(p):
     else:
         print("Syntax error at EOF")
 
-parser = yacc.yacc()
+parser = yacc.yacc(debug=True)
+
 
 # Console program
 ''' while True:
@@ -206,5 +222,6 @@ with open('textFile.txt') as file:
     lines = file.readlines()
 
 for line in lines:
-    yacc.parse(line)
+    if line != '\n':
+        yacc.parse(line)
 print('Compiled successfully')

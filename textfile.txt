@@ -1,2 +1,2 @@
-boolean flt = true
-print(flt)
+boolean flt = true;
+print(flt);
