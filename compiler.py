@@ -34,7 +34,7 @@ reserved = {
  }
 
 tokens = [
-    'INUMBER', 'FNUMBER', 'STRING', 'BOOLEAN', 'NAME', 'SEMICOLON', 'EQUAL', 'NOTEQUAL', 'GREATER', 'LESSTHAN', 'GREATEREQUAL', 'LESSEQUAL'
+    'INUMBER', 'FNUMBER', 'STRING', 'BOOLEAN', 'NAME', 'SEMICOLON', 'EQUAL', 'NOTEQUAL', 'GREATER', 'LESSTHAN', 'GREATEREQUAL', 'LESSEQUAL', 'AND', 'OR'
 ] + list(reserved.values())
 
 
@@ -44,6 +44,8 @@ t_GREATER          = r'>'
 t_LESSTHAN         = r'<'
 t_GREATEREQUAL     = r'>='
 t_LESSEQUAL        = r'<='
+t_AND        = r'&&'
+t_OR        = r'\|\|'
 
 
 # Tokens
@@ -148,6 +150,7 @@ def p_expression_binop(p):
                   | expression '*' expression
                   | expression '/' expression
                   | expression '^' expression'''
+    print("p_expression_binop")
     if p[2] == '+':
         p[0] = p[1] + p[3]
     elif p[2] == '-':
@@ -166,6 +169,7 @@ def p_expression_compare(p):
                   | expression LESSTHAN expression
                   | expression GREATEREQUAL expression
                   | expression LESSEQUAL expression'''
+    print("p_expression_compare")
     if p[2] == '==':
         p[0] = p[1] == p[3]
     elif p[2] == '!=':
@@ -180,37 +184,56 @@ def p_expression_compare(p):
         p[0] = p[1] <= p[3]
     else:
         p[0] = None
+
+
+def p_expression_boleanas(p):
+    '''expression : expression AND expression
+                  | expression OR expression'''
+    print("p_expression_boleanas")
+    if p[2] == '&&':
+        p[0] = p[1] and p[3]
+    elif p[2] == '||':
+        p[0] = p[1] or p[3]
+    else:
+        p[0] = None
     
 
 
 def p_expression_uminus(p):
     "expression : '-' expression %prec UMINUS"
+    print("p_expression_uminus")
     p[0] = -p[2]
 
 def p_expression_group(p):
     "expression : '(' expression ')'"
+    print("p_expression_group")
     p[0] = p[2]
 
 def p_expression_inumber(p):
     "expression : INUMBER"
+    print("p_expression_inumber")
     p[0] = p[1]
 
 def p_expression_fnumber(p):
     "expression : FNUMBER"
+    print("p_expression_fnumber")
     p[0] = p[1]
 
 def p_expression_boolean(p):
     "expression :  BOOLEAN"
+    print("p_expression_boolean")
     p[0] = p[1]
 
 def p_expression_string(p):
     "expression :  STRING"
+    print("p_expression_string")
     p[0] = p[1][1:len(p[1]) - 1]
 
 
 
 def p_expression_name(p):       # obtiene el valor de una variable previamente guardada
     "expression : NAME"
+    print("p_expression_name")
     # print(p[1])
     try:
         p[0] = names[p[1]]["value"]
