@@ -4,8 +4,7 @@ float f_one = 2.0;
 float f_two = 6.7;
 
 boolean b_one = true;
-boolean b_two = false;
-
+boolean b_two = true;
 
 string s_one = "papa";
-print(true && true);
+print(false || false);

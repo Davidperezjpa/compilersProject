@@ -30,7 +30,11 @@ reserved = {
     'float' : 'FLOATDEC',
     'string' : 'STRINGDEC',
     'boolean' : 'BOOLEANDEC',
-    'print' : 'PRINT'
+    'print' : 'PRINT',
+    'if' : 'IF',
+    'else' : 'ELSE',
+    'elif' : 'ELIF'
+
  }
 
 tokens = [
@@ -100,8 +104,14 @@ precedence = (
 names = {}
 abstractTree = []
 
+def p_block(p):
+    ''' block : code block
+            | code '''
+    p[0] = p[1]
+
 def p_code(p):
-    'code : statement SEMICOLON'
+    '''code : statement SEMICOLON 
+        |   flowctrl  '''
 
 def p_statement_declare_int(p):
     '''statement : INTDEC NAME is_assing
@@ -110,13 +120,6 @@ def p_statement_declare_int(p):
         print('No puedes asignar flotantes a enteros')
     else:
         names[p[2]] = { "type": "INT", "value": p[3]}
-
-def p_is_assing(p):
-    '''is_assing : "=" expression 
-                | '''
-    p[0] = 0
-    if len(p) > 2:
-        p[0] = p[2]
 
 def p_statement_declare_float(p):
     'statement : FLOATDEC NAME is_assing'
@@ -144,6 +147,19 @@ def p_statement_expr(p):
     'statement : expression'
     # print(p[1])
 
+def p_bridge_expr_boolean(p):
+    '''expression : expression_boolean
+                | '''
+    print("p_bridge_expr_boolean")
+    p[0] = p[1]
+
+def p_is_assing(p):
+    '''is_assing : "=" expression 
+                | '''
+    p[0] = 0
+    if len(p) > 2:
+        p[0] = p[2]
+
 def p_expression_binop(p):
     '''expression : expression '+' expression
                   | expression '-' expression
@@ -163,7 +179,7 @@ def p_expression_binop(p):
         p[0] = p[1] ** p[3]
 
 def p_expression_compare(p):
-    '''expression : expression EQUAL expression
+    '''expression_boolean : expression EQUAL expression
                   | expression NOTEQUAL expression
                   | expression GREATER expression
                   | expression LESSTHAN expression
@@ -187,7 +203,7 @@ def p_expression_compare(p):
 
 
 def p_expression_boleanas(p):
-    '''expression : expression AND expression
+    '''expression_boolean : expression AND expression
                   | expression OR expression'''
     print("p_expression_boleanas")
     if p[2] == '&&':
@@ -241,6 +257,47 @@ def p_expression_name(p):       # obtiene el valor de una variable previamente g
         print("Undefined name '%s'" % p[1])
         p[0] = 0
 
+# def p_expression_compare_boolean(p):
+#     '''expression_boolean : expression EQUAL expression
+#                   | expression NOTEQUAL expression
+#                   | expression GREATER expression
+#                   | expression LESSTHAN expression
+#                   | expression GREATEREQUAL expression
+#                   | expression LESSEQUAL expression'''
+#     print("p_expression_compare_boolean")
+#     if p[2] == '==':
+#         p[0] = p[1] == p[3]
+#     elif p[2] == '!=':
+#         p[0] = p[1] != p[3]
+#     elif p[2] == '>':
+#         p[0] = p[1] > p[3]
+#     elif  p[2] == '<':
+#         p[0] = p[1] < p[3]
+#     elif p[2] == '>=':
+#         p[0] = p[1] >= p[3]
+#     elif p[2] == '<=':
+#         p[0] = p[1] <= p[3]
+#     else:
+#         p[0] = None
+
+
+def p_flowctrl_if(p):
+    ''' flowctrl : IF '(' expression_boolean ')' '{' block '}' elif else '''
+    print("p_flowctrl_if")
+    p[0] = p[3]
+
+def p_elif(p):
+    ''' elif : ELIF '(' expression_boolean ')' '{' block '}' elif else 
+        |  '''
+    print("p_elif")
+    p[0] = p[3]
+
+def p_else(p):
+    ''' else : ELSE '{' block '}' 
+        |  '''
+    print("p_else")
+    p[0] = p[3]
+
 def p_error(p):
     if p:
         print(p)
@@ -248,7 +305,7 @@ def p_error(p):
     else:
         print("Syntax error at EOF")
 
-parser = yacc.yacc(debug=True)
+parser = yacc.yacc(debug=1)
 
 
 # Console program
