@@ -1,2 +1,11 @@
-boolean flt = true
-print(flt)
+int i_one = 2;
+int i_two = 3;
+float f_one = 2.0;
+float f_two = 6.7;
+
+boolean b_one = true;
+boolean b_two = false;
+
+
+string s_one = "papa";
+print(true && true);

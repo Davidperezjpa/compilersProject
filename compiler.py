@@ -2,29 +2,29 @@ import ply.yacc as yacc
 import ply.lex as lex
 
 #TODO Operaciones
-# Aritméticas
-# Comparación
+#DONE Aritméticas
+#DONE Comparación
 # Booleanas
 # Operaciones de bloques
 
 #TODO Tipos de datos
-# Int
-# Float
-# String
-# Bolean
+#DONE Int
+#DONE Float
+#DONE String
+#DONE Bolean
 
-#TODO Operaciones permitidas
+#TODO Operaciones permitidas entre sistema de tipos
 #TODO Flujo de control
 # If/Else/Elif
 # While
 # For
-#TODO terminacion de ;
+#DONE terminacion de ;
 #TODO Arbol sintáctico
 #TODO salida de codigo de 3 direcciones
 
 
 
-literals = ['=', '+', '-', '*', '/', '^', '(', ')', ';']
+literals = ['=', '+', '-', '*', '/', '^', '(', ')']
 reserved = { 
     'int' : 'INTDEC',
     'float' : 'FLOATDEC',
@@ -34,8 +34,19 @@ reserved = {
  }
 
 tokens = [
-    'INUMBER', 'FNUMBER', 'STRING', 'BOOLEAN', 'NAME'
+    'INUMBER', 'FNUMBER', 'STRING', 'BOOLEAN', 'NAME', 'SEMICOLON', 'EQUAL', 'NOTEQUAL', 'GREATER', 'LESSTHAN', 'GREATEREQUAL', 'LESSEQUAL', 'AND', 'OR'
 ] + list(reserved.values())
+
+
+t_EQUAL            = r'=='
+t_NOTEQUAL         = r'!='
+t_GREATER          = r'>'
+t_LESSTHAN         = r'<'
+t_GREATEREQUAL     = r'>='
+t_LESSEQUAL        = r'<='
+t_AND        = r'&&'
+t_OR        = r'\|\|'
+
 
 # Tokens
 
@@ -63,6 +74,7 @@ def t_STRING(t):
     return t
 
 
+t_SEMICOLON = r';'
 
 t_ignore = " \t"
 
@@ -87,6 +99,9 @@ precedence = (
 # dictionary of names
 names = {}
 abstractTree = []
+
+def p_code(p):
+    'code : statement SEMICOLON'
 
 def p_statement_declare_int(p):
     '''statement : INTDEC NAME is_assing
@@ -135,6 +150,7 @@ def p_expression_binop(p):
                   | expression '*' expression
                   | expression '/' expression
                   | expression '^' expression'''
+    print("p_expression_binop")
     if p[2] == '+':
         p[0] = p[1] + p[3]
     elif p[2] == '-':
@@ -146,34 +162,78 @@ def p_expression_binop(p):
     elif p[2] == '^':
         p[0] = p[1] ** p[3]
 
+def p_expression_compare(p):
+    '''expression : expression EQUAL expression
+                  | expression NOTEQUAL expression
+                  | expression GREATER expression
+                  | expression LESSTHAN expression
+                  | expression GREATEREQUAL expression
+                  | expression LESSEQUAL expression'''
+    print("p_expression_compare")
+    if p[2] == '==':
+        p[0] = p[1] == p[3]
+    elif p[2] == '!=':
+        p[0] = p[1] != p[3]
+    elif p[2] == '>':
+        p[0] = p[1] > p[3]
+    elif  p[2] == '<':
+        p[0] = p[1] < p[3]
+    elif p[2] == '>=':
+        p[0] = p[1] >= p[3]
+    elif p[2] == '<=':
+        p[0] = p[1] <= p[3]
+    else:
+        p[0] = None
+
+
+def p_expression_boleanas(p):
+    '''expression : expression AND expression
+                  | expression OR expression'''
+    print("p_expression_boleanas")
+    if p[2] == '&&':
+        p[0] = p[1] and p[3]
+    elif p[2] == '||':
+        p[0] = p[1] or p[3]
+    else:
+        p[0] = None
+    
+
+
 def p_expression_uminus(p):
     "expression : '-' expression %prec UMINUS"
+    print("p_expression_uminus")
     p[0] = -p[2]
 
 def p_expression_group(p):
     "expression : '(' expression ')'"
+    print("p_expression_group")
     p[0] = p[2]
 
 def p_expression_inumber(p):
     "expression : INUMBER"
+    print("p_expression_inumber")
     p[0] = p[1]
 
 def p_expression_fnumber(p):
     "expression : FNUMBER"
+    print("p_expression_fnumber")
     p[0] = p[1]
 
 def p_expression_boolean(p):
     "expression :  BOOLEAN"
+    print("p_expression_boolean")
     p[0] = p[1]
 
 def p_expression_string(p):
     "expression :  STRING"
+    print("p_expression_string")
     p[0] = p[1][1:len(p[1]) - 1]
 
 
 
 def p_expression_name(p):       # obtiene el valor de una variable previamente guardada
     "expression : NAME"
+    print("p_expression_name")
     # print(p[1])
     try:
         p[0] = names[p[1]]["value"]
@@ -188,7 +248,8 @@ def p_error(p):
     else:
         print("Syntax error at EOF")
 
-parser = yacc.yacc()
+parser = yacc.yacc(debug=True)
+
 
 # Console program
 ''' while True:
@@ -206,5 +267,6 @@ with open('textFile.txt') as file:
     lines = file.readlines()
 
 for line in lines:
-    yacc.parse(line)
+    if line != '\n':
+        yacc.parse(line)
 print('Compiled successfully')
