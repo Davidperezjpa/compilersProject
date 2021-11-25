@@ -2,23 +2,23 @@ import ply.yacc as yacc
 import ply.lex as lex
 
 #TODO Operaciones
-# Aritméticas
-# Comparación
+#DONE Aritméticas
+#DONE Comparación
 # Booleanas
 # Operaciones de bloques
 
 #TODO Tipos de datos
-# Int
-# Float
-# String
-# Bolean
+#DONE Int
+#DONE Float
+#DONE String
+#DONE Bolean
 
-#TODO Operaciones permitidas
+#TODO Operaciones permitidas entre sistema de tipos
 #TODO Flujo de control
 # If/Else/Elif
 # While
 # For
-#TODO terminacion de ;
+#DONE terminacion de ;
 #TODO Arbol sintáctico
 #TODO salida de codigo de 3 direcciones
 
@@ -34,18 +34,16 @@ reserved = {
  }
 
 tokens = [
-    'INUMBER', 'FNUMBER', 'STRING', 'BOOLEAN', 'NAME', 'SEMICOLON'
+    'INUMBER', 'FNUMBER', 'STRING', 'BOOLEAN', 'NAME', 'SEMICOLON', 'EQUAL', 'NOTEQUAL', 'GREATER', 'LESSTHAN', 'GREATEREQUAL', 'LESSEQUAL'
 ] + list(reserved.values())
 
-# t_EQUAL            = r'=='
-# t_DIFFERENT        = r'!='
-# t_GREATER          = r'>'
-# t_LESSTHAN         = r'<'
-# t_GREATEREQUAL     = r'>='
-# t_LESSEQUAL        = r'<='
 
-
-
+t_EQUAL            = r'=='
+t_NOTEQUAL         = r'!='
+t_GREATER          = r'>'
+t_LESSTHAN         = r'<'
+t_GREATEREQUAL     = r'>='
+t_LESSEQUAL        = r'<='
 
 
 # Tokens
@@ -160,6 +158,30 @@ def p_expression_binop(p):
         p[0] = p[1] / p[3]
     elif p[2] == '^':
         p[0] = p[1] ** p[3]
+
+def p_expression_compare(p):
+    '''expression : expression EQUAL expression
+                  | expression NOTEQUAL expression
+                  | expression GREATER expression
+                  | expression LESSTHAN expression
+                  | expression GREATEREQUAL expression
+                  | expression LESSEQUAL expression'''
+    if p[2] == '==':
+        p[0] = p[1] == p[3]
+    elif p[2] == '!=':
+        p[0] = p[1] != p[3]
+    elif p[2] == '>':
+        p[0] = p[1] > p[3]
+    elif  p[2] == '<':
+        p[0] = p[1] < p[3]
+    elif p[2] == '>=':
+        p[0] = p[1] >= p[3]
+    elif p[2] == '<=':
+        p[0] = p[1] <= p[3]
+    else:
+        p[0] = None
+    
+
 
 def p_expression_uminus(p):
     "expression : '-' expression %prec UMINUS"

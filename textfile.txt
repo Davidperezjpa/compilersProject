@@ -1,2 +1,6 @@
-boolean flt = true;
-print(flt);
+int i_one = 2;
+int i_two = 3;
+float f_one = 4.5;
+float f_two = 6.7;
+string s_one = "papa";
+print(s_one == s_one);
