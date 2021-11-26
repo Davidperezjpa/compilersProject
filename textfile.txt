@@ -1,10 +1,3 @@
-if(true) { 
-    
-    print("Hello"); 
-
-
-}
-
-
-
-
+while (true){
+    print("hello");
+} 

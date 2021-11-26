@@ -189,6 +189,11 @@ def p_else(p):
     print("p_else")
     # p[0] = p[3]
 
+def p_flowctrl_while(p):
+    ''' flowctrl : WHILE '(' expression_boolean ')' '{' block '}' '''
+    print("p_flowctrl_while")
+    # p[0] = p[6]
+
 def p_error(p):
     # raise (Exception(p))
     if p:
@@ -215,9 +220,5 @@ lines = []
 with open('textFile.txt') as file:
     lines = file.readlines()
 print(lines)
-# for line in lines:
-#     if line != '\n':
-#         print(line)
-#     yacc.parse(line)
 parser.parse(lexer=lexer, input=open("textFile.txt").read())
 print('Compiled successfully')

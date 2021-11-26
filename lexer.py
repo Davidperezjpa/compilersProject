@@ -3,19 +3,19 @@ import ply.lex as lex
 #TODO Operaciones
 #DONE Aritméticas
 #DONE Comparación
-# Booleanas
-# Operaciones de bloques
+#DONE Booleanas
+#DONE Operaciones de bloques
 
-#TODO Tipos de datos
+#DONE Tipos de datos
 #DONE Int
 #DONE Float
 #DONE String
 #DONE Bolean
 
-#TODO Operaciones permitidas entre sistema de tipos
+#DONE Operaciones permitidas entre sistema de tipos
 #TODO Flujo de control
-# If/Else/Elif
-# While
+#DONE If/Else/Elif
+#DONE While
 # For
 #DONE terminacion de ;
 #TODO Arbol sintáctico
@@ -32,7 +32,8 @@ reserved = {
     'print' : 'PRINT',
     'if' : 'IF',
     'else' : 'ELSE',
-    'elif' : 'ELIF'
+    'elif' : 'ELIF',
+    'while' : 'WHILE'
 
  }
 
