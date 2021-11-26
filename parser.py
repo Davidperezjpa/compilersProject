@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from lexer import *
+from node import Node
 
 # Parsing rules
 precedence = (
@@ -16,7 +17,10 @@ abstractTree = []
 def p_block(p):
     ''' block : code block
             | code '''
-    p[0] = p[1]
+    if len(p) == 3:
+        p[0] = Node('block', [p[1], p[2]])
+    elif p[1]:
+        p[0] = p[1]
 
 def p_code(p):
     '''code : statement SEMICOLON 

@@ -1,6 +1,6 @@
 import ply.lex as lex
 
-#TODO Operaciones
+#DONE Operaciones
 #DONE Aritméticas
 #DONE Comparación
 #DONE Booleanas
