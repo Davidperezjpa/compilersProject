@@ -1,10 +1,2 @@
-int i_one = 2;
-int i_two = 3;
-float f_one = 2.0;
-float f_two = 6.7;
+if(true) { print("Hello"); }
 
-boolean b_one = true;
-boolean b_two = true;
-
-string s_one = "papa";
-print(false || false);
