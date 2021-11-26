@@ -34,28 +34,36 @@ def p_statement_declare_int(p):
         print('No puedes asignar flotantes a enteros')
     else:
         names[p[2]] = { "type": "INT", "value": p[3]}
+    p[0] = Node('declaration', [p[1], p[2], p[3]])
+    
 
 def p_statement_declare_float(p):
     'statement : FLOATDEC NAME is_assing'
     names[p[2]] = { "type": "FLOAT", "value":p[3]}
+    p[0] = Node('declaration', [p[1], p[2], p[3]])
 
 def p_statement_declare_boolean(p):
     'statement : BOOLEANDEC NAME is_assing'
     names[p[2]] = { "type": "BOOLEAN", "value":p[3]}
+    p[0] = Node('declaration', [p[1], p[2], p[3]])
 
 def p_statement_declare_string(p):
     'statement : STRINGDEC NAME is_assing'
     names[p[2]] = { "type": "STRING", "value":p[3]}
+    p[0] = Node('declaration', [p[1], p[2], p[3]])
 
 def p_statement_print(p):
     '''statement : PRINT '(' expression ')' '''
     print(p[3])
+    p[0] = Node('print', [p[1], p[3]])
+
 
 def p_statement_assign(p):
     'statement : NAME "=" expression'
     if p[1] not in names:
         print ( "You must declare a variable before using it")
     names[p[1]]["value"] = p[3]
+    p[0] = Node('assign', [p[1], p[2], p[3]])
 
 def p_statement_expr(p):
     ''' statement : expression''' 
@@ -95,6 +103,8 @@ def p_expression_binop(p):
         p[0] = p[1] / p[3]
     elif p[2] == '^':
         p[0] = p[1] ** p[3]
+    
+    p[0] = Node('binop', [p[1], p[2], p[3]])
 
 def p_expression_compare(p):
     '''expression_boolean : expression EQUAL expression
@@ -119,6 +129,8 @@ def p_expression_compare(p):
     else:
         p[0] = None
 
+    p[0] = Node('compare', [p[1], p[2], p[3]])
+
 
 def p_expression_boolean_andor(p):
     '''expression_boolean : expression AND expression
@@ -130,6 +142,8 @@ def p_expression_boolean_andor(p):
         p[0] = p[1] or p[3]
     else:
         p[0] = None
+    
+    p[0] = Node('booleanandor', [p[1], p[2], p[3]])
     
 
 
@@ -179,24 +193,34 @@ def p_expression_name(p):       # obtiene el valor de una variable previamente g
 def p_flowctrl_if(p):
     ''' flowctrl : IF '(' expression_boolean ')' '{' block '}' elif else '''
     print("p_flowctrl_if")
-    # p[0] = p[6]
+    
+    p[0] = Node('if', [p[3], p[6]])
+    if p[8]:
+        p[0].children.append(p[8])
+    if p[9]:
+        p[0].children.append(p[9])
 
 def p_elif(p):
     ''' elif : ELIF '(' expression_boolean ')' '{' block '}' elif
         |  '''
     print("p_elif")
-    # p[0] = p[6]
+
+    if len(p) > 2:
+        p[0] = Node('elif', [p[3], p[6]])
+        if p[8]:
+            p[0].children.append(p[8])
 
 def p_else(p):
     ''' else : ELSE '{' block '}' 
         |  '''
     print("p_else")
-    # p[0] = p[3]
+    if len(p) > 2:
+        p[0] = Node('else', [p[3]])
 
 def p_flowctrl_while(p):
     ''' flowctrl : WHILE '(' expression_boolean ')' '{' block '}' '''
     print("p_flowctrl_while")
-    # p[0] = p[6]
+    p[0] = Node('while', [p[3], p[6]])
 
 def p_error(p):
     # raise (Exception(p))
@@ -224,5 +248,6 @@ lines = []
 with open('textFile.txt') as file:
     lines = file.readlines()
 print(lines)
-parser.parse(lexer=lexer, input=open("textFile.txt").read())
+sinTree = parser.parse(lexer=lexer, input=open("textFile.txt").read())
+
 print('Compiled successfully')
