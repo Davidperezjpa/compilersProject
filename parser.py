@@ -215,9 +215,9 @@ lines = []
 with open('textFile.txt') as file:
     lines = file.readlines()
 print(lines)
-for line in lines:
-    if line != '\n':
-        # print(line)
-        yacc.parse(line)
-        
+# for line in lines:
+#     if line != '\n':
+#         print(line)
+#     yacc.parse(line)
+parser.parse(lexer=lexer, input=open("textFile.txt").read())
 print('Compiled successfully')
