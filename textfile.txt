@@ -1,5 +1,6 @@
-float a;
-
-while (true){
-    print("hello");
-}
+string a = "prueba";
+int b = 13;
+float c = 2.2;
+boolean d = true;
+c = 24;
+print (c);
