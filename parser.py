@@ -71,7 +71,6 @@ def p_statement_declare_string(p):
 
     decNode = Node('declaration', [Node(p[1]), Node(p[2])])
     # set parent here of p[0]
-    print(p[3])
     if p[3]:
         p[0] = Node('assignment', [decNode, p[3]])
     else:
@@ -79,9 +78,8 @@ def p_statement_declare_string(p):
 
 def p_statement_print(p):
     '''statement : PRINT '(' expression ')' '''
-    print(p[3])
-
-    p[0] = Node(Node(p[1]), p[3])
+    # print("printing")
+    p[0] = Node(p[1], [p[3]])
 
 def p_statement_assign(p):
     'statement : NAME "=" expression'
@@ -96,10 +94,10 @@ def p_statement_expr(p):        #BRIDGE
     p[0] = p[1]
 
 def p_is_assing(p):             #BRIDGE Used for assigning to declaring variables
-    '''is_assing : '=' expression '''
-    print("assign value to variable")
+    '''is_assing : '=' expression 
+                | '''
+    # print("assign value to variable")
     p[0] = 0
-    print(p[2])
     if len(p) > 2:
         p[0] = p[2]
 
@@ -110,6 +108,8 @@ def p_is_assing(p):             #BRIDGE Used for assigning to declaring variable
 def p_bridge_expr(p):     #BRIDGE allows for a expression to produce a expression_boolean
     '''expression : expression_boolean'''
     print("p_bridge_expr")
+    p[0] = p[1]
+    
     
 
 def p_expression_binop(p):
@@ -130,12 +130,12 @@ def p_expression_binop(p):
     # elif p[2] == '^':
     #     p[0] = p[1] ** p[3]
     
-    p[0] = []
-    for i in p[1]:
-        p[0].append(i)
-    p[0].append(p[2])
-    for i in p[3]:
-        p[0].append(i)
+    # p[0] = []
+    # for i in p[1]:
+    #     p[0].append(i)
+    # p[0].append(p[2])
+    # for i in p[3]:
+    #     p[0].append(i)
 
 
     p[0] = Node(p[2], [p[1], p[3]])
@@ -163,12 +163,12 @@ def p_expression_compare(p):
     # else:
     #     p[0] = None
 
-    p[0] = []
-    for i in p[1]:
-        p[0].append(i)
-    p[0].append(p[2])
-    for i in p[3]:
-        p[0].append(i)
+    # p[0] = []
+    # for i in p[1]:
+    #     p[0].append(i)
+    # p[0].append(p[2])
+    # for i in p[3]:
+    #     p[0].append(i)
 
     p[0] = Node(p[2], [p[1], p[3]])
 
@@ -177,13 +177,15 @@ def p_expression_boolean_andor(p):
     '''expression_boolean : expression AND expression
                   | expression OR expression'''
     print("p_expression_boolean_andor")
-    if p[2] == '&&':
-        p[0] = p[1] and p[3]
-    elif p[2] == '||':
-        p[0] = p[1] or p[3]
-    else:
-        p[0] = None
     
+    # if p[2] == '&&':
+    #     p[0] = p[1] and p[3]
+    # elif p[2] == '||':
+    #     p[0] = p[1] or p[3]
+    # else:
+    #     p[0] = None
+
+    # print(p[3].type)
     p[0] = Node(p[2], [p[1], p[3]])
     
 
@@ -191,12 +193,12 @@ def p_expression_boolean_andor(p):
 def p_expression_uminus(p):
     "expression : '-' expression %prec UMINUS"
     print("p_expression_uminus")
-    p[0] = Node(-p[2])
+    p[0] = -p[2]
 
 def p_expression_group(p):
     "expression : '(' expression ')'"
     print("p_expression_group")
-    p[0] = Node(p[2])
+    p[0] = p[2]
 
 def p_expression_inumber(p):
     "expression : INUMBER"
@@ -289,10 +291,10 @@ parser = yacc.yacc(debug=True)
     yacc.parse(s) '''
 
 # File input
-lines = []
-with open('textFile.txt') as file:
-    lines = file.readlines()
-print(lines)
+# lines = []
+# with open('textFile.txt') as file:
+#     lines = file.readlines()
+# print(lines)
 sinTree = parser.parse(lexer=lexer, input=open("textFile.txt").read())
 
 

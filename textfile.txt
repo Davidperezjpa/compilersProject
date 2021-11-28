@@ -1,6 +1,6 @@
-string a = "prueba";
-int b = 13;
-float c = 2.2;
-boolean d = true;
-c = 24;
-print (c);
+int a;
+int b;
+a = 1;
+b = 2;
+boolean z = a < b;
+print(a ^ b);
